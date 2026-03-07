@@ -1,0 +1,10 @@
+/DBIO-PostgreSQL-*
+/.build/
+/_build/
+/blib/
+/Build
+/Makefile
+/pm_to_blib
+*.sw[op]
+*~
+.DS_Store
