@@ -5,6 +5,26 @@ use strict;
 use warnings;
 
 use Moo;
+
+=head1 DESCRIPTION
+
+C<DBIO::PostgreSQL::Introspect> reads the live state of a PostgreSQL database
+via C<pg_catalog> and returns a unified model hashref. It is the source side
+of the test-deploy-and-compare strategy used by L<DBIO::PostgreSQL::Deploy>.
+
+    my $intro = DBIO::PostgreSQL::Introspect->new(
+        dbh           => $dbh,
+        schema_filter => [qw( public auth api )],
+    );
+    my $model = $intro->model;
+    # $model->{schemas}, $model->{tables}, $model->{columns}, ...
+
+The model is built lazily on first access and covers schemas, extensions,
+types (enums/composites/ranges), tables, columns, indexes, triggers,
+functions, RLS policies, and sequences.
+
+=cut
+
 use DBIO::PostgreSQL::Introspect::Schemas;
 use DBIO::PostgreSQL::Introspect::Tables;
 use DBIO::PostgreSQL::Introspect::Columns;
@@ -22,15 +42,36 @@ has dbh => (
   required => 1,
 );
 
+=attr dbh
+
+A connected C<DBI> database handle. Required.
+
+=cut
+
 has schema_filter => (
   is      => 'ro',
   default => sub { undef },
 );
 
+=attr schema_filter
+
+Optional ArrayRef of PostgreSQL schema names to restrict introspection to.
+When C<undef>, all non-system schemas are introspected.
+
+=cut
+
 has model => (
   is      => 'lazy',
   builder => '_build_model',
 );
+
+=attr model
+
+The introspected database model as a hashref. Built lazily on first access.
+Keys: C<schemas>, C<extensions>, C<types>, C<tables>, C<columns>, C<indexes>,
+C<triggers>, C<functions>, C<policies>, C<sequences>.
+
+=cut
 
 sub _build_model {
   my ($self) = @_;
@@ -61,5 +102,37 @@ sub _build_model {
     sequences  => $sequences,
   };
 }
+
+=seealso
+
+=over 4
+
+=item * L<DBIO::PostgreSQL::Deploy> - uses this class to compare current and desired state
+
+=item * L<DBIO::PostgreSQL::Diff> - compares two models produced by this class
+
+=item * L<DBIO::PostgreSQL::Introspect::Schemas>
+
+=item * L<DBIO::PostgreSQL::Introspect::Tables>
+
+=item * L<DBIO::PostgreSQL::Introspect::Columns>
+
+=item * L<DBIO::PostgreSQL::Introspect::Types>
+
+=item * L<DBIO::PostgreSQL::Introspect::Indexes>
+
+=item * L<DBIO::PostgreSQL::Introspect::Triggers>
+
+=item * L<DBIO::PostgreSQL::Introspect::Functions>
+
+=item * L<DBIO::PostgreSQL::Introspect::Extensions>
+
+=item * L<DBIO::PostgreSQL::Introspect::Policies>
+
+=item * L<DBIO::PostgreSQL::Introspect::Sequences>
+
+=back
+
+=cut
 
 1;

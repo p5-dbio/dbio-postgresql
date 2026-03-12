@@ -7,10 +7,57 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a type-level diff operation: C<CREATE TYPE>, C<DROP TYPE CASCADE>,
+or C<ALTER TYPE ... ADD VALUE> (for enum value additions). Handles enum,
+composite, and range types. Note that enum value removal is not supported by
+PostgreSQL — only addition is possible without recreating the type.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop, add_value
+
+=attr action
+
+The operation type: C<create>, C<drop>, or C<add_value> (enum only).
+
+=cut
+
 has type_key => ( is => 'ro', required => 1 );
+
+=attr type_key
+
+The C<schema.type_name> key.
+
+=cut
+
 has type_info => ( is => 'ro' );
-has added_values => ( is => 'ro' ); # for enum add_value
+
+=attr type_info
+
+Type metadata hashref from introspection (C<type_kind>, C<values>,
+C<attributes>, or C<subtype> depending on kind).
+
+=cut
+
+has added_values => ( is => 'ro' );
+
+=attr added_values
+
+ArrayRef of new enum values to add (only set when C<action> is C<add_value>).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Type->diff($source, $target);
+
+Compares two type hashrefs. Produces C<create> operations for new types,
+C<drop> for removed types, and C<add_value> for enum types that have gained
+new values.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -56,6 +103,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL for this operation. For C<add_value>, returns one
+C<ALTER TYPE ... ADD VALUE> statement per new enum value.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   my $info = $self->type_info;
@@ -85,6 +139,13 @@ sub as_sql {
     } @{ $self->added_values };
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+type: auth.role_type (enum)> or
+C<~type auth.role_type: +1 value(s) (superadmin)>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

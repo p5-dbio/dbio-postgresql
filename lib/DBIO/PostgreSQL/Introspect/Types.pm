@@ -4,6 +4,34 @@ package DBIO::PostgreSQL::Introspect::Types;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches user-defined type metadata from C<pg_catalog>: enum types (with
+ordered values), composite types (with attributes), and range types (with
+subtype). System types are excluded.
+
+=cut
+
+=method fetch
+
+    my $types = DBIO::PostgreSQL::Introspect::Types->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.type_name>. Each value is a hashref with
+C<schema_name>, C<type_name>, C<type_kind> (C<enum>, C<composite>, or
+C<range>), and kind-specific fields:
+
+=over 4
+
+=item enum: C<values> (ArrayRef, sorted by C<enumsortorder>)
+
+=item composite: C<attributes> (ArrayRef of C<{ name, type, ordinal }>)
+
+=item range: C<subtype> (subtype name string)
+
+=back
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

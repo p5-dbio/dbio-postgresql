@@ -7,11 +7,65 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a column-level diff operation: C<ADD COLUMN>, C<DROP COLUMN>, or
+C<ALTER COLUMN> (type change, nullability change, or default change). Only
+columns on tables that exist in both source and target are compared.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # add, drop, alter
+
+=attr action
+
+The operation type: C<add>, C<drop>, or C<alter>.
+
+=cut
+
 has table_key => ( is => 'ro', required => 1 );
+
+=attr table_key
+
+The C<schema.table> key identifying which table the column belongs to.
+
+=cut
+
 has column_name => ( is => 'ro', required => 1 );
+
+=attr column_name
+
+The column name.
+
+=cut
+
 has old_info => ( is => 'ro' );
+
+=attr old_info
+
+The source column metadata hashref (present for C<drop> and C<alter>).
+
+=cut
+
 has new_info => ( is => 'ro' );
+
+=attr new_info
+
+The target column metadata hashref (present for C<add> and C<alter>).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Column->diff(
+        $source_cols, $target_cols, $source_tables, $target_tables,
+    );
+
+Compares column lists for tables that exist in both source and target.
+Detects added columns, dropped columns, and altered columns (data type,
+C<NOT NULL>, or default value changes).
+
+=cut
 
 sub diff {
   my ($class, $source_cols, $target_cols, $source_tables, $target_tables) = @_;
@@ -71,6 +125,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns one or more C<ALTER TABLE> statements for this operation. For C<alter>,
+may return multiple statements (one per changed attribute).
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   if ($self->action eq 'add') {
@@ -117,6 +178,12 @@ sub as_sql {
     return join "\n", @stmts;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+column: auth.users.avatar (text)>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

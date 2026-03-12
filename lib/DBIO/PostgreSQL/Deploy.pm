@@ -11,15 +11,83 @@ use DBIO::PostgreSQL::Introspect;
 use DBIO::PostgreSQL::Diff;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+C<DBIO::PostgreSQL::Deploy> orchestrates the deployment and upgrade of
+PostgreSQL schemas using a test-deploy-and-compare strategy.
+
+For upgrades, instead of computing diffs from abstract class representations,
+it:
+
+=over 4
+
+=item 1. Introspects the live database via C<pg_catalog>
+
+=item 2. Creates a temporary database
+
+=item 3. Deploys the desired schema (from DBIO classes) into the temp database
+
+=item 4. Introspects the temp database via C<pg_catalog>
+
+=item 5. Computes the diff between the two models using L<DBIO::PostgreSQL::Diff>
+
+=item 6. Drops the temp database
+
+=back
+
+This means PostgreSQL is comparing with itself — the diff is always accurate
+regardless of how complex the schema features are.
+
+    my $deploy = DBIO::PostgreSQL::Deploy->new(
+        schema => MyApp::DB->connect($dsn),
+    );
+
+    # Fresh install
+    $deploy->install;
+
+    # Upgrade (test-deploy + compare + apply)
+    $deploy->upgrade;
+
+    # Or in steps:
+    my $diff = $deploy->diff;
+    print $diff->summary;
+    $deploy->apply($diff) if $diff->has_changes;
+
+=cut
+
 has schema => (
   is       => 'ro',
   required => 1,
 );
 
+=attr schema
+
+A connected L<DBIO::PostgreSQL> schema instance. Required.
+
+=cut
+
 has temp_db_prefix => (
   is      => 'ro',
   default => '_dbio_tmp_',
 );
+
+=attr temp_db_prefix
+
+The prefix for temporary database names created during C<diff>. Defaults to
+C<_dbio_tmp_>. The full name includes the PID and current timestamp to ensure
+uniqueness.
+
+=cut
+
+=method install
+
+    $deploy->install;
+
+Generates DDL from the DBIO schema classes via L<DBIO::PostgreSQL::DDL> and
+executes it against the connected database. Suitable for fresh installs on an
+empty database.
+
+=cut
 
 sub install {
   my ($self) = @_;
@@ -32,6 +100,19 @@ sub install {
 
   return 1;
 }
+
+=method diff
+
+    my $diff = $deploy->diff;
+
+Computes the difference between the current live database and the desired
+state defined by the DBIO schema classes. Creates and destroys a temporary
+database automatically. Returns a L<DBIO::PostgreSQL::Diff> object.
+
+Note: C<CREATE DATABASE> cannot run inside a transaction, so the connection
+must not be in an open transaction.
+
+=cut
 
 sub diff {
   my ($self) = @_;
@@ -61,6 +142,16 @@ sub diff {
   );
 }
 
+=method apply
+
+    $deploy->apply($diff);
+
+Applies a L<DBIO::PostgreSQL::Diff> object to the connected database by
+executing each SQL statement from C<$diff-E<gt>as_sql> in order. Does nothing
+if C<$diff-E<gt>has_changes> is false.
+
+=cut
+
 sub apply {
   my ($self, $diff) = @_;
   return unless $diff->has_changes;
@@ -73,6 +164,16 @@ sub apply {
   return 1;
 }
 
+=method upgrade
+
+    my $diff = $deploy->upgrade;
+
+Convenience method: calls L</diff> then L</apply>. Returns the
+L<DBIO::PostgreSQL::Diff> object if there were changes, or C<undef> if the
+database is already up to date.
+
+=cut
+
 sub upgrade {
   my ($self) = @_;
   my $diff = $self->diff;
@@ -80,6 +181,16 @@ sub upgrade {
   $self->apply($diff);
   return $diff;
 }
+
+=method install_schema
+
+    $deploy->install_schema('tenant_42');
+
+Creates a single PostgreSQL schema (namespace) using C<CREATE SCHEMA IF NOT
+EXISTS>. Useful for multi-tenant setups where each tenant gets its own
+schema.
+
+=cut
 
 sub install_schema {
   my ($self, $schema_name) = @_;
@@ -215,5 +326,21 @@ sub _quote_ident {
   $name =~ s/"/""/g;
   return qq{"$name"};
 }
+
+=seealso
+
+=over 4
+
+=item * L<DBIO::PostgreSQL> - schema component with C<pg_deploy> factory method
+
+=item * L<DBIO::PostgreSQL::DDL> - generates the DDL used by C<install> and C<diff>
+
+=item * L<DBIO::PostgreSQL::Introspect> - reads the live and temp database state
+
+=item * L<DBIO::PostgreSQL::Diff> - compares the two introspected models
+
+=back
+
+=cut
 
 1;

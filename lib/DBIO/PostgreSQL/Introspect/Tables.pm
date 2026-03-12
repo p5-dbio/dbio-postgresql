@@ -4,6 +4,24 @@ package DBIO::PostgreSQL::Introspect::Tables;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches PostgreSQL table (and view, materialized view, foreign table, and
+partitioned table) metadata from C<pg_catalog.pg_class>.
+
+=cut
+
+=method fetch
+
+    my $tables = DBIO::PostgreSQL::Introspect::Tables->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.table>. Each value is a hashref with
+keys: C<schema_name>, C<table_name>, C<oid>, C<kind> (pg relkind char),
+C<kind_label> (human-readable), C<persistence>, C<comment>, C<rls_enabled>,
+C<rls_forced>.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

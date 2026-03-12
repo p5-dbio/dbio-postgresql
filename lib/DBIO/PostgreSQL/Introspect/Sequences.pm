@@ -4,6 +4,25 @@ package DBIO::PostgreSQL::Introspect::Sequences;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches sequence metadata from C<pg_catalog.pg_sequence>, including ownership
+information (the table and column the sequence is attached to via C<pg_depend>),
+start value, increment, min/max bounds, cache size, cycle flag, and data type.
+
+=cut
+
+=method fetch
+
+    my $sequences = DBIO::PostgreSQL::Introspect::Sequences->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.sequence_name>. Each entry has:
+C<schema_name>, C<sequence_name>, C<owned_by_table>, C<owned_by_column>,
+C<start_value>, C<increment>, C<min_value>, C<max_value>, C<cache_size>,
+C<is_cycle>, C<data_type>.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

@@ -7,9 +7,46 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a function-level diff operation: C<CREATE FUNCTION>, C<DROP
+FUNCTION>, or C<CREATE OR REPLACE FUNCTION> (when the definition has changed).
+Function identity is by the full signature key C<schema.name(identity_args)>.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop, replace
+
+=attr action
+
+The operation type: C<create>, C<drop>, or C<replace>.
+
+=cut
+
 has function_key => ( is => 'ro', required => 1 );
+
+=attr function_key
+
+The function's identity string: C<schema.name(args)>.
+
+=cut
+
 has function_info => ( is => 'ro' );
+
+=attr function_info
+
+Function metadata hashref (C<definition>, C<language>, C<return_type>, etc.).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Function->diff($source, $target);
+
+Compares function hashrefs by identity key. Produces C<create>, C<replace>
+(definition changed), or C<drop> operations.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -48,6 +85,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL. For C<create> and C<replace>, emits the full function
+definition from introspection. For C<drop>, returns C<DROP FUNCTION key;>.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   my $info = $self->function_info;
@@ -65,6 +109,12 @@ sub as_sql {
     return sprintf 'DROP FUNCTION %s;', $self->function_key;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+function: auth.update_modified_at()>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

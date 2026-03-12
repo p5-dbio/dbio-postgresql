@@ -7,10 +7,56 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents an index-level diff operation: C<CREATE INDEX> or C<DROP INDEX>.
+When an index definition changes, it generates a C<DROP> followed by a
+C<CREATE>. The full definition string from C<pg_get_indexdef> is used for
+comparison, so partial indexes, expression indexes, and storage parameters are
+all detected correctly.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop
+
+=attr action
+
+The operation type: C<create> or C<drop>.
+
+=cut
+
 has table_key => ( is => 'ro', required => 1 );
+
+=attr table_key
+
+The C<schema.table> key for the table this index belongs to.
+
+=cut
+
 has index_name => ( is => 'ro', required => 1 );
+
+=attr index_name
+
+The index name.
+
+=cut
+
 has index_info => ( is => 'ro' );
+
+=attr index_info
+
+Index metadata hashref (C<definition>, C<access_method>, C<columns>, etc.).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Index->diff($source, $target);
+
+Compares index sets across all tables. Index identity is by name; definition
+changes produce a drop-then-create pair.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -81,6 +127,14 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL for this operation. For C<create>, uses the full
+C<pg_get_indexdef> definition string when available, otherwise generates a
+basic C<CREATE INDEX> statement. For C<drop>, returns C<DROP INDEX name;>.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   if ($self->action eq 'create') {
@@ -96,6 +150,12 @@ sub as_sql {
     return sprintf 'DROP INDEX %s;', $self->index_name;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+index: idx_users_tags (on auth.users)>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

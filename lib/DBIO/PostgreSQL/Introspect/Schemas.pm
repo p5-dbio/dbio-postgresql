@@ -4,6 +4,23 @@ package DBIO::PostgreSQL::Introspect::Schemas;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches PostgreSQL schema (namespace) metadata from C<pg_catalog.pg_namespace>.
+System schemas (C<pg_*> and C<information_schema>) are excluded.
+
+=cut
+
+=method fetch
+
+    my $schemas = DBIO::PostgreSQL::Introspect::Schemas->fetch($dbh, $filter);
+
+Returns a hashref keyed by schema name. Each value is a hashref with keys
+C<oid> and C<comment>. Pass an optional ArrayRef as C<$filter> to restrict
+to specific schema names.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

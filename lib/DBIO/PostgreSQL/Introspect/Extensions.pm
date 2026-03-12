@@ -4,6 +4,26 @@ package DBIO::PostgreSQL::Introspect::Extensions;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches installed PostgreSQL extension metadata from
+C<pg_catalog.pg_extension>. The built-in C<plpgsql> extension is excluded
+since it is always present.
+
+=cut
+
+=method fetch
+
+    my $extensions = DBIO::PostgreSQL::Introspect::Extensions->fetch($dbh);
+
+Returns a hashref keyed by extension name. Each entry has:
+C<extension_name>, C<version>, C<schema_name> (the schema the extension's
+objects live in), C<relocatable>.
+
+No schema filter is accepted — extensions are database-level objects.
+
+=cut
+
 sub fetch {
   my ($class, $dbh) = @_;
 

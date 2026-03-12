@@ -7,6 +7,46 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+C<DBIO::PostgreSQL::DDL> generates PostgreSQL DDL statements directly from
+DBIO schema and result classes, without going through SQL::Translator. This
+produces correct, PostgreSQL-native SQL that preserves all PostgreSQL-specific
+features.
+
+The generated DDL is used by L<DBIO::PostgreSQL::Deploy/install> for fresh
+installs and by the test-deploy side of L<DBIO::PostgreSQL::Deploy/diff> for
+upgrade diffing.
+
+=cut
+
+=method install_ddl
+
+    my $sql = DBIO::PostgreSQL::DDL->install_ddl($schema);
+
+Generates a complete PostgreSQL DDL script for the connected schema object.
+The script is ordered to satisfy dependencies:
+
+=over 4
+
+=item 1. C<CREATE EXTENSION IF NOT EXISTS> statements
+
+=item 2. C<CREATE SCHEMA IF NOT EXISTS> statements (skipping C<public>)
+
+=item 3. Enum types, composite types, and functions from L<DBIO::PostgreSQL::PgSchema> subclasses
+
+=item 4. C<CREATE TABLE> statements with columns, primary keys, indexes, triggers, and RLS from L<DBIO::PostgreSQL::Result> classes
+
+=item 5. C<ALTER DATABASE CURRENT SET> for C<pg_settings>
+
+=item 6. C<SET search_path TO> from C<pg_search_path>
+
+=back
+
+Returns the DDL as a single string with statements separated by blank lines.
+
+=cut
+
 sub install_ddl {
   my ($class, $schema) = @_;
   my @stmts;
@@ -187,6 +227,22 @@ sub install_ddl {
 
   return join("\n\n", @stmts) . "\n";
 }
+
+=seealso
+
+=over 4
+
+=item * L<DBIO::PostgreSQL> - schema component that calls C<pg_install_ddl>
+
+=item * L<DBIO::PostgreSQL::Deploy> - uses C<install_ddl> for fresh installs and diff
+
+=item * L<DBIO::PostgreSQL::PgSchema> - source of enum, type, and function definitions
+
+=item * L<DBIO::PostgreSQL::Result> - source of table, index, trigger, and RLS definitions
+
+=back
+
+=cut
 
 sub _pg_column_type {
   my ($info) = @_;

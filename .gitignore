@@ -8,3 +8,6 @@
 *.sw[op]
 *~
 .DS_Store
+
+# Claude Code (managed by dbio-dev workspace)
+.claude/

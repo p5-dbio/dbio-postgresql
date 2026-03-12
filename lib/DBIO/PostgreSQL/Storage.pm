@@ -8,6 +8,47 @@ use base qw/DBIO::Storage::DBI/;
 
 __PACKAGE__->register_driver('Pg' => __PACKAGE__);
 
+=head1 DESCRIPTION
+
+C<DBIO::PostgreSQL::Storage> is the DBI storage class for PostgreSQL. It
+extends L<DBIO::Storage::DBI> with PostgreSQL-specific behaviour:
+
+=over 4
+
+=item *
+
+C<INSERT ... RETURNING> for efficient last-insert-id retrieval (PostgreSQL 8.2+).
+
+=item *
+
+Deferred foreign key checks via C<SET CONSTRAINTS ALL DEFERRED>.
+
+=item *
+
+Sequence lookup via C<pg_catalog> when C<RETURNING> is not available.
+
+=item *
+
+C<BYTEA> column binding through C<DBD::Pg> native type constants.
+
+=item *
+
+Native savepoint support via C<pg_savepoint>, C<pg_release>, and
+C<pg_rollback_to>.
+
+=item *
+
+Deployment via L<DBIO::PostgreSQL::DDL> when the schema has the
+L<DBIO::PostgreSQL> component loaded, falling back to SQL::Translator
+otherwise.
+
+=back
+
+This class is registered as the driver for the C<Pg> DBD and is selected
+automatically when L<DBIO::PostgreSQL> is loaded into a schema class.
+
+=cut
+
 use Scope::Guard ();
 use Context::Preserve 'preserve_context';
 use DBIO::Carp;
@@ -27,6 +68,16 @@ sub _determine_supports_insert_returning {
   ;
 }
 
+=method with_deferred_fk_checks
+
+    $storage->with_deferred_fk_checks(sub { ... });
+
+Wraps the given coderef in a transaction with C<SET CONSTRAINTS ALL DEFERRED>,
+restoring immediate constraint checking afterwards. Use this when bulk-loading
+data that temporarily violates referential integrity.
+
+=cut
+
 sub with_deferred_fk_checks {
   my ($self, $sub) = @_;
 
@@ -40,6 +91,17 @@ sub with_deferred_fk_checks {
 
   return preserve_context { $sub->() } after => sub { $txn_scope_guard->commit };
 }
+
+=method last_insert_id
+
+    my @ids = $storage->last_insert_id($source, @cols);
+
+Returns the last inserted value(s) for the given column(s) by querying the
+associated sequence via C<pg_catalog>. Only called when C<INSERT ... RETURNING>
+is unavailable (PostgreSQL older than 8.2). The sequence is determined from the
+column default expression.
+
+=cut
 
 # only used when INSERT ... RETURNING is disabled
 sub last_insert_id {
@@ -149,6 +211,16 @@ sub _minmax_operator_for_datatype {
   shift->next::method(@_);
 }
 
+=method bind_attribute_by_data_type
+
+    my $attr = $storage->bind_attribute_by_data_type($data_type);
+
+Returns C<{ pg_type =E<gt> DBD::Pg::PG_BYTEA() }> for binary LOB types so that
+C<DBD::Pg> handles C<BYTEA> columns correctly. Also checks that a compatible
+C<DBD::Pg> version is installed for the connected PostgreSQL server version.
+
+=cut
+
 sub bind_attribute_by_data_type {
   my ($self, $data_type) = @_;
 
@@ -189,6 +261,17 @@ sub _exec_svp_rollback {
   $self->_dbh->pg_rollback_to($name);
 }
 
+=method deploy
+
+    $storage->deploy($schema, $type, $sqltargs, $dir);
+
+Deploys the schema. When the schema has the L<DBIO::PostgreSQL> component
+loaded (i.e. C<$schema-E<gt>can('pg_deploy')> is true), delegates to
+L<DBIO::PostgreSQL::Deploy/install>. Otherwise falls back to the parent
+SQL::Translator-based deployment.
+
+=cut
+
 # Override deployment to use DBIO::PostgreSQL::DDL instead of SQL::Translator
 sub deploy {
   my ($self, $schema, $type, $sqltargs, $dir) = @_;
@@ -201,6 +284,17 @@ sub deploy {
   # Fallback to parent (SQL::Translator) for schemas without PostgreSQL component
   $self->next::method($schema, $type, $sqltargs, $dir);
 }
+
+=method deployment_statements
+
+    my $sql = $storage->deployment_statements($schema, ...);
+
+Generates DDL statements for deployment. When the schema has
+C<pg_install_ddl>, returns native PostgreSQL DDL from
+L<DBIO::PostgreSQL::DDL>. Otherwise falls back to SQL::Translator, passing
+the detected server version as C<postgres_version> to the producer.
+
+=cut
 
 sub deployment_statements {
   my $self = shift;
@@ -224,5 +318,19 @@ sub deployment_statements {
 
   $self->next::method($schema, $type, $version, $dir, $sqltargs, @rest);
 }
+
+=seealso
+
+=over 4
+
+=item * L<DBIO::PostgreSQL> - schema component that activates this storage class
+
+=item * L<DBIO::PostgreSQL::Deploy> - high-level deploy/upgrade orchestration
+
+=item * L<DBIO::PostgreSQL::DDL> - native PostgreSQL DDL generator
+
+=back
+
+=cut
 
 1;

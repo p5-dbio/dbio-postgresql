@@ -7,10 +7,58 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a Row Level Security diff operation: C<CREATE POLICY>, C<DROP
+POLICY>, C<ENABLE ROW LEVEL SECURITY>, or C<DISABLE ROW LEVEL SECURITY>. RLS
+enable/disable changes on tables are detected by comparing the C<rls_enabled>
+flag from table introspection.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop, enable_rls, disable_rls
+
+=attr action
+
+The operation type: C<create>, C<drop>, C<enable_rls>, or C<disable_rls>.
+
+=cut
+
 has table_key => ( is => 'ro', required => 1 );
+
+=attr table_key
+
+The C<schema.table> key identifying the table.
+
+=cut
+
 has policy_name => ( is => 'ro' );
+
+=attr policy_name
+
+The policy name (not set for C<enable_rls> / C<disable_rls> operations).
+
+=cut
+
 has policy_info => ( is => 'ro' );
+
+=attr policy_info
+
+Policy metadata hashref (C<command>, C<permissive>, C<using_expr>,
+C<check_expr>, C<roles>).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Policy->diff(
+        $source_pol, $target_pol, $source_tables, $target_tables,
+    );
+
+Compares RLS state and policy sets. Detects RLS enable/disable changes on
+existing tables, new policies, and dropped policies.
+
+=cut
 
 sub diff {
   my ($class, $source_pol, $target_pol, $source_tables, $target_tables) = @_;
@@ -71,6 +119,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL for this operation: C<ALTER TABLE ... ENABLE/DISABLE ROW LEVEL
+SECURITY>, C<CREATE POLICY ...>, or C<DROP POLICY ... ON ...>.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
 
@@ -92,6 +147,13 @@ sub as_sql {
     return sprintf 'DROP POLICY %s ON %s;', $self->policy_name, $self->table_key;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+policy: users_own_data on auth.users>
+or C<enable_rls on auth.users>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

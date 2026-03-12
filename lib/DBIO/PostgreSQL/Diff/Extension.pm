@@ -7,11 +7,63 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents an extension-level diff operation: C<CREATE EXTENSION IF NOT
+EXISTS>, C<DROP EXTENSION>, or C<ALTER EXTENSION ... UPDATE TO> (version
+change). Extensions are compared by name; version differences produce an update
+operation.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop, update
+
+=attr action
+
+The operation type: C<create>, C<drop>, or C<update>.
+
+=cut
+
 has extension_name => ( is => 'ro', required => 1 );
+
+=attr extension_name
+
+The PostgreSQL extension name (e.g. C<pgcrypto>, C<postgis>).
+
+=cut
+
 has extension_info => ( is => 'ro' );
+
+=attr extension_info
+
+Extension metadata hashref (C<version>, C<schema_name>, C<relocatable>).
+
+=cut
+
 has old_version => ( is => 'ro' );
+
+=attr old_version
+
+The installed version (set for C<update> operations).
+
+=cut
+
 has new_version => ( is => 'ro' );
+
+=attr new_version
+
+The desired version (set for C<update> operations).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Extension->diff($source, $target);
+
+Compares extension hashrefs. Produces C<create>, C<update> (version changed),
+or C<drop> operations.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -52,6 +104,12 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL for this operation.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   if ($self->action eq 'create') {
@@ -65,6 +123,13 @@ sub as_sql {
       $self->extension_name, $self->new_version;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+extension: pgcrypto> or
+C<~extension: postgis (3.3 -E<gt> 3.4)>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

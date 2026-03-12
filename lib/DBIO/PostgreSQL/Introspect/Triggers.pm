@@ -4,6 +4,25 @@ package DBIO::PostgreSQL::Introspect::Triggers;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches user-defined trigger metadata from C<pg_catalog.pg_trigger>. Internal
+(constraint) triggers are excluded. Timing (C<BEFORE>/C<AFTER>/C<INSTEAD OF>),
+event (C<INSERT>/C<UPDATE>/C<DELETE>/C<TRUNCATE>), and orientation
+(C<ROW>/C<STATEMENT>) are decoded from the C<tgtype> bitmask.
+
+=cut
+
+=method fetch
+
+    my $triggers = DBIO::PostgreSQL::Introspect::Triggers->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.table>. Each value is a hashref keyed by
+trigger name. Each trigger entry has: C<trigger_name>, C<definition> (from
+C<pg_get_triggerdef>), C<timing>, C<event>, C<orientation>, C<enabled>.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

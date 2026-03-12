@@ -7,10 +7,54 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a trigger-level diff operation: C<CREATE TRIGGER> or C<DROP
+TRIGGER>. When a trigger definition changes, it produces a C<DROP> followed by
+a C<CREATE>. Triggers are compared using the full C<pg_get_triggerdef> output.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop
+
+=attr action
+
+The operation type: C<create> or C<drop>.
+
+=cut
+
 has table_key => ( is => 'ro', required => 1 );
+
+=attr table_key
+
+The C<schema.table> key identifying which table the trigger belongs to.
+
+=cut
+
 has trigger_name => ( is => 'ro', required => 1 );
+
+=attr trigger_name
+
+The trigger name.
+
+=cut
+
 has trigger_info => ( is => 'ro' );
+
+=attr trigger_info
+
+Trigger metadata hashref (C<definition>, C<timing>, C<event>, etc.).
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Trigger->diff($source, $target);
+
+Compares trigger sets per table. Definition changes produce a drop-then-create
+pair.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -68,6 +112,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns C<CREATE TRIGGER ...;> using the full definition from introspection,
+or C<DROP TRIGGER name ON table;>.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   if ($self->action eq 'create') {
@@ -81,6 +132,12 @@ sub as_sql {
     return sprintf 'DROP TRIGGER %s ON %s;', $self->trigger_name, $self->table_key;
   }
 }
+
+=method summary
+
+Returns a one-line description such as C<+trigger: users_modified_at on auth.users>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

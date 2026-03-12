@@ -7,8 +7,39 @@ use warnings;
 use Moo;
 use namespace::clean;
 
+=head1 DESCRIPTION
+
+Represents a single schema (namespace) diff operation: C<CREATE SCHEMA> or
+C<DROP SCHEMA CASCADE>. Instances are produced by the L</diff> class method
+and consumed by L<DBIO::PostgreSQL::Diff>.
+
+=cut
+
 has action => ( is => 'ro', required => 1 ); # create, drop
+
+=attr action
+
+The operation type: C<create> or C<drop>.
+
+=cut
+
 has schema_name => ( is => 'ro', required => 1 );
+
+=attr schema_name
+
+The PostgreSQL schema name being created or dropped.
+
+=cut
+
+=method diff
+
+    my @ops = DBIO::PostgreSQL::Diff::Schema->diff($source, $target);
+
+Compares two schema hashrefs (as from L<DBIO::PostgreSQL::Introspect::Schemas>)
+and returns a list of C<DBIO::PostgreSQL::Diff::Schema> objects representing
+schemas to create or drop.
+
+=cut
 
 sub diff {
   my ($class, $source, $target) = @_;
@@ -27,6 +58,13 @@ sub diff {
   return @ops;
 }
 
+=method as_sql
+
+Returns the SQL statement for this operation: C<CREATE SCHEMA name;> or
+C<DROP SCHEMA name CASCADE;>.
+
+=cut
+
 sub as_sql {
   my ($self) = @_;
   if ($self->action eq 'create') {
@@ -38,6 +76,13 @@ sub as_sql {
       _quote_ident($self->schema_name);
   }
 }
+
+=method summary
+
+Returns a one-line human-readable description such as C<+schema: auth> or
+C<-schema: old_ns>.
+
+=cut
 
 sub summary {
   my ($self) = @_;

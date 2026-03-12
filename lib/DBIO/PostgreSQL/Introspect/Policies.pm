@@ -4,6 +4,25 @@ package DBIO::PostgreSQL::Introspect::Policies;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches Row Level Security policy metadata from C<pg_catalog.pg_policy>.
+Policy command types and USING/WITH CHECK expressions are decoded from
+PostgreSQL's internal representation.
+
+=cut
+
+=method fetch
+
+    my $policies = DBIO::PostgreSQL::Introspect::Policies->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.table>. Each value is a hashref keyed by
+policy name. Each policy entry has: C<policy_name>, C<command> (C<SELECT>,
+C<INSERT>, C<UPDATE>, C<DELETE>, or C<ALL>), C<permissive>, C<using_expr>,
+C<check_expr>, C<roles> (ArrayRef of role names, or undef for all roles).
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

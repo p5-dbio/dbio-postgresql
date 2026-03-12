@@ -1,0 +1,6 @@
+Revision history for DBIO-PostgreSQL
+
+{{$NEXT}}
+    - Add module POD for DBIO::PostgreSQL
+    - Add README with scope, migration mapping, and test environment notes
+    - Clarify migration references against historical DBIx::Class naming

@@ -4,6 +4,25 @@ package DBIO::PostgreSQL::Introspect::Functions;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches function and procedure metadata from C<pg_catalog.pg_proc>. The full
+function definition is retrieved via C<pg_get_functiondef>. System functions
+(in C<pg_*> and C<information_schema> schemas) are excluded.
+
+=cut
+
+=method fetch
+
+    my $functions = DBIO::PostgreSQL::Introspect::Functions->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.function_name(identity_args)>. Each entry
+has: C<schema_name>, C<function_name>, C<identity_args>, C<definition> (full
+source from C<pg_get_functiondef>), C<language>, C<volatility> (C<i>/C<s>/C<v>),
+C<is_strict>, C<security_definer>, C<return_type>.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

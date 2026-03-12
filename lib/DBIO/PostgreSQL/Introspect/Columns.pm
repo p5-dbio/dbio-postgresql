@@ -4,6 +4,26 @@ package DBIO::PostgreSQL::Introspect::Columns;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches column metadata for all tables from C<pg_catalog.pg_attribute>,
+including data types (via C<format_type>), nullability, default expressions,
+identity/generated column markers, and enum/composite type names.
+
+=cut
+
+=method fetch
+
+    my $columns = DBIO::PostgreSQL::Introspect::Columns->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.table>. Each value is an ArrayRef of
+column hashrefs ordered by C<attnum>. Each column hashref has keys:
+C<column_name>, C<ordinal>, C<data_type>, C<not_null>, C<default_value>,
+C<identity>, C<generated>, C<comment>, C<type_category>, C<enum_type>,
+C<composite_type>, C<type_schema>.
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 

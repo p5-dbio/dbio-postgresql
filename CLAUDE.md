@@ -364,7 +364,7 @@ __PACKAGE__->pg_extensions(qw(
 
 ## Build System
 
-Uses Dist::Zilla with `[@Author::GETTY]` plugin bundle (like all GETTY distributions).
+Uses Dist::Zilla with `[@DBIO]` plugin bundle. PodWeaver with `=attr` and `=method` collectors.
 
 ## Relationship to DBIO
 

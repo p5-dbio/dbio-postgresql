@@ -4,6 +4,26 @@ package DBIO::PostgreSQL::Introspect::Indexes;
 use strict;
 use warnings;
 
+=head1 DESCRIPTION
+
+Fetches index metadata from C<pg_catalog.pg_index>, including access method,
+uniqueness, primary key flag, validity, the full index definition string from
+C<pg_get_indexdef>, partial index predicates, and expression index expressions.
+
+=cut
+
+=method fetch
+
+    my $indexes = DBIO::PostgreSQL::Introspect::Indexes->fetch($dbh, $filter);
+
+Returns a hashref keyed by C<schema.table>. Each value is a hashref keyed by
+index name. Each index entry has: C<index_name>, C<access_method>, C<is_unique>,
+C<is_primary>, C<is_valid>, C<definition> (full C<pg_get_indexdef> output),
+C<predicate>, C<expressions>, C<columns> (ArrayRef of column names, empty for
+expression-only indexes).
+
+=cut
+
 sub fetch {
   my ($class, $dbh, $filter) = @_;
 
