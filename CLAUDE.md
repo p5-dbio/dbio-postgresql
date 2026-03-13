@@ -1,19 +1,5 @@
 # CLAUDE.md — DBIO::PostgreSQL
 
-## Project Vision
-
-PostgreSQL-specific schema management for DBIO (the DBIx::Class fork, see ../dbio/). Instead of the
-database-agnostic approach of SQL::Translator (which loses PostgreSQL features), this module
-embraces PostgreSQL fully — using its own catalog for introspection, its own DDL for deployment,
-and a test-deploy-and-compare strategy for diffs.
-
-**Status**: Active development.
-
-## Namespace
-
-- `DBIO::PostgreSQL` — main distribution
-- NOT `DBIx::Class::PostgreSQL` — this is for the DBIO fork (see ../dbio/) specifically
-
 ## Core Concept: Three-Layer PostgreSQL Hierarchy
 
 PostgreSQL has a real hierarchy that DBIO currently flattens:
@@ -362,19 +348,3 @@ __PACKAGE__->pg_extensions(qw(
 - Introspect the exact PostgreSQL type from pg_catalog
 - Compare types as PostgreSQL strings — no lossy translation layer
 
-## Build System
-
-Uses Dist::Zilla with `[@DBIO]` plugin bundle. PodWeaver with `=attr` and `=method` collectors.
-
-## Relationship to DBIO
-
-This module is designed for DBIO (the DBIx::Class fork). It depends on DBIO's
-component system (load_components) and Result class architecture. The namespace
-is `DBIO::PostgreSQL`, not `DBIx::Class::PostgreSQL`.
-
-When DBIO is released, the API might need adjustment depending on:
-- Whether DBIO changes the component loading mechanism
-- Whether DBIO::Core differs from DBIx::Class::Core
-- How DBIO handles `table()` and schema qualification
-
-These adjustments should be minor since the component architecture is stable.
