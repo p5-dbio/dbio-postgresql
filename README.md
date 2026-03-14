@@ -27,3 +27,7 @@ Set environment variables for integration tests:
 `t/20-sqlmaker-pg.t` can run without a live database by using
 `DBIO::Test` hybrid fake storage with
 `storage_type => 'DBIO::PostgreSQL::Storage'`.
+
+Shared driver tests can also exercise the replicated core path with:
+
+`DBIO::Test->init_schema(replicated => 1, storage_type => 'DBIO::PostgreSQL::Storage')`

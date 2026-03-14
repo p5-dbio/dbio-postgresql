@@ -63,6 +63,11 @@ SQLMaker-focused tests can run offline via L<DBIO::Test> with:
 
   storage_type => 'DBIO::PostgreSQL::Storage'
 
+Replicated-path tests can reuse the same harness with:
+
+  replicated   => 1,
+  storage_type => 'DBIO::PostgreSQL::Storage'
+
 =head1 METHODS
 
 =method pg_schemas
