@@ -30,6 +30,7 @@ my @modules = qw(
   DBIO::PostgreSQL::DDL
   DBIO::PostgreSQL::Deploy
   DBIO::PostgreSQL::Storage
+  DBIO::PostgreSQL::Loader
 );
 
 plan tests => scalar @modules;
