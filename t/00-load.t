@@ -17,6 +17,7 @@ my @modules = qw(
   DBIO::PostgreSQL::Introspect::Extensions
   DBIO::PostgreSQL::Introspect::Policies
   DBIO::PostgreSQL::Introspect::Sequences
+  DBIO::PostgreSQL::Introspect::ForeignKeys
   DBIO::PostgreSQL::Diff
   DBIO::PostgreSQL::Diff::Schema
   DBIO::PostgreSQL::Diff::Table
@@ -31,6 +32,7 @@ my @modules = qw(
   DBIO::PostgreSQL::Deploy
   DBIO::PostgreSQL::Storage
   DBIO::PostgreSQL::Loader
+  DBIO::PostgreSQL::Loader::Model
 );
 
 plan tests => scalar @modules;

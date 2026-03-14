@@ -18,7 +18,7 @@ partitioned table) metadata from C<pg_catalog.pg_class>.
 Returns a hashref keyed by C<schema.table>. Each value is a hashref with
 keys: C<schema_name>, C<table_name>, C<oid>, C<kind> (pg relkind char),
 C<kind_label> (human-readable), C<persistence>, C<comment>, C<rls_enabled>,
-C<rls_forced>.
+C<rls_forced>, C<view_definition>.
 
 =cut
 
@@ -41,7 +41,10 @@ sub fetch {
       END AS kind_label,
       pg_catalog.obj_description(c.oid, 'pg_class') AS comment,
       c.relrowsecurity AS rls_enabled,
-      c.relforcerowsecurity AS rls_forced
+      c.relforcerowsecurity AS rls_forced,
+      CASE
+        WHEN c.relkind IN ('v', 'm') THEN pg_catalog.pg_get_viewdef(c.oid)
+      END AS view_definition
     FROM pg_catalog.pg_class c
     JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
     WHERE c.relkind IN ('r', 'v', 'm', 'f', 'p')
@@ -73,6 +76,7 @@ sub fetch {
       comment     => $row->{comment},
       rls_enabled => $row->{rls_enabled} ? 1 : 0,
       rls_forced  => $row->{rls_forced} ? 1 : 0,
+      view_definition => $row->{view_definition},
     };
   }
 

@@ -161,8 +161,9 @@ sub install_ddl {
         } else {
           $columns = join(', ', @{ $idx->{columns} // [] });
         }
-        my $sql = sprintf 'CREATE INDEX %s ON %s%s (%s)',
-          _quote_ident($idx_name), $qualified, $using, $columns;
+        my $unique = $idx->{unique} ? 'UNIQUE ' : '';
+        my $sql = sprintf 'CREATE %sINDEX %s ON %s%s (%s)',
+          $unique, _quote_ident($idx_name), $qualified, $using, $columns;
         if ($idx->{with}) {
           my @with_parts;
           for my $k (sort keys %{ $idx->{with} }) {
@@ -180,9 +181,10 @@ sub install_ddl {
       my $triggers = $result_class->pg_triggers;
       for my $trg_name (sort keys %$triggers) {
         my $trg = $triggers->{$trg_name};
-        push @stmts, sprintf 'CREATE TRIGGER %s %s %s ON %s FOR EACH ROW EXECUTE FUNCTION %s;',
+        my $for_each = $trg->{for_each} || 'ROW';
+        push @stmts, sprintf 'CREATE TRIGGER %s %s %s ON %s FOR EACH %s EXECUTE FUNCTION %s;',
           _quote_ident($trg_name), $trg->{when}, $trg->{event},
-          $qualified, $trg->{execute};
+          $qualified, $for_each, $trg->{execute};
       }
     }
 
@@ -201,6 +203,9 @@ sub install_ddl {
           my $sql = sprintf 'CREATE POLICY %s ON %s',
             _quote_ident($pol_name), $qualified;
           $sql .= sprintf ' FOR %s', $pol->{for} if $pol->{for} && $pol->{for} ne 'ALL';
+          if ($pol->{roles} && @{ $pol->{roles} }) {
+            $sql .= sprintf ' TO %s', join(', ', @{ $pol->{roles} });
+          }
           $sql .= sprintf ' USING (%s)', $pol->{using} if $pol->{using};
           $sql .= sprintf ' WITH CHECK (%s)', $pol->{with_check} if $pol->{with_check};
           push @stmts, "$sql;";

@@ -35,6 +35,7 @@ use DBIO::PostgreSQL::Introspect::Functions;
 use DBIO::PostgreSQL::Introspect::Extensions;
 use DBIO::PostgreSQL::Introspect::Policies;
 use DBIO::PostgreSQL::Introspect::Sequences;
+use DBIO::PostgreSQL::Introspect::ForeignKeys;
 use namespace::clean;
 
 has dbh => (
@@ -69,7 +70,7 @@ has model => (
 
 The introspected database model as a hashref. Built lazily on first access.
 Keys: C<schemas>, C<extensions>, C<types>, C<tables>, C<columns>, C<indexes>,
-C<triggers>, C<functions>, C<policies>, C<sequences>.
+C<triggers>, C<functions>, C<policies>, C<sequences>, C<foreign_keys>.
 
 =cut
 
@@ -88,6 +89,7 @@ sub _build_model {
   my $functions  = DBIO::PostgreSQL::Introspect::Functions->fetch($dbh, $filter);
   my $policies   = DBIO::PostgreSQL::Introspect::Policies->fetch($dbh, $filter);
   my $sequences  = DBIO::PostgreSQL::Introspect::Sequences->fetch($dbh, $filter);
+  my $foreign_keys = DBIO::PostgreSQL::Introspect::ForeignKeys->fetch($dbh, $filter);
 
   return {
     schemas    => $schemas,
@@ -100,6 +102,7 @@ sub _build_model {
     functions  => $functions,
     policies   => $policies,
     sequences  => $sequences,
+    foreign_keys => $foreign_keys,
   };
 }
 
@@ -130,6 +133,8 @@ sub _build_model {
 =item * L<DBIO::PostgreSQL::Introspect::Policies>
 
 =item * L<DBIO::PostgreSQL::Introspect::Sequences>
+
+=item * L<DBIO::PostgreSQL::Introspect::ForeignKeys>
 
 =back
 
