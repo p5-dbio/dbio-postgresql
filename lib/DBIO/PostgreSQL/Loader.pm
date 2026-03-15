@@ -12,10 +12,13 @@ use DBIO::PostgreSQL::Loader::Model;
 
 =head1 DESCRIPTION
 
-See L<DBIO::Loader> and L<DBIO::Loader::Base>.
+This is the PostgreSQL-specific Loader implementation used by L<DBIO::Loader>.
+It builds on L<DBIO::PostgreSQL::Introspect> so schema loading, comments,
+indexes, triggers, views, and RLS metadata all come from the same native
+introspection model.
 
-This module was ported from the historical
-L<DBIx::Class::Schema::Loader::DBI::Pg>.
+For the public loader interface, see L<DBIO::Loader> and
+L<DBIO::Loader::Base>.
 
 =cut
 
