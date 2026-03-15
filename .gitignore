@@ -9,9 +9,6 @@
 *~
 .DS_Store
 
-# Claude Code (managed by dbio-dev workspace)
-
-
 # Claude Code - commit: skills/, agents/, hooks/, settings.json
 # Ignore: local overrides, credentials, session data
 !/.claude/

@@ -25,6 +25,8 @@ human-readable summary.
 
 Diff operations are generated in dependency order: extensions first, then
 schemas, types, functions, tables, columns, indexes, triggers, and policies.
+That same order is used for both C<summary> and C<as_sql>, so review output and
+executable output stay aligned.
 
 =cut
 

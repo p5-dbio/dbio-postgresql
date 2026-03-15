@@ -21,7 +21,9 @@ of the test-deploy-and-compare strategy used by L<DBIO::PostgreSQL::Deploy>.
 
 The model is built lazily on first access and covers schemas, extensions,
 types (enums/composites/ranges), tables, columns, indexes, triggers,
-functions, RLS policies, and sequences.
+functions, RLS policies, and sequences. The same model shape is consumed by
+L<DBIO::PostgreSQL::Diff> and by the test-deploy workflow in
+L<DBIO::PostgreSQL::Deploy>.
 
 =cut
 

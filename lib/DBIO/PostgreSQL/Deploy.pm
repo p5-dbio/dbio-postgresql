@@ -38,6 +38,10 @@ it:
 This means PostgreSQL is comparing with itself — the diff is always accurate
 regardless of how complex the schema features are.
 
+The resulting L<DBIO::PostgreSQL::Diff> object is review-friendly as well as
+executable: inspect C<summary> when you want a readable change list, or
+C<as_sql> when you are ready to apply the ordered migration statements.
+
     my $deploy = DBIO::PostgreSQL::Deploy->new(
         schema => MyApp::DB->connect($dsn),
     );

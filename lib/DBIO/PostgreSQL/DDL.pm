@@ -16,7 +16,8 @@ features.
 
 The generated DDL is used by L<DBIO::PostgreSQL::Deploy/install> for fresh
 installs and by the test-deploy side of L<DBIO::PostgreSQL::Deploy/diff> for
-upgrade diffing.
+upgrade diffing. Reach for this class directly when you want the raw SQL text;
+use L<DBIO::PostgreSQL::Deploy> when you want database orchestration.
 
 =cut
 

@@ -46,6 +46,10 @@ otherwise.
 
 This class is registered as the driver for the C<Pg> DBD and is selected
 automatically when L<DBIO::PostgreSQL> is loaded into a schema class.
+Schema-introspection and migration planning live in
+L<DBIO::PostgreSQL::Introspect>, L<DBIO::PostgreSQL::Diff>, and
+L<DBIO::PostgreSQL::Deploy>; this class stays focused on the live DBI storage
+behaviour.
 
 =cut
 
