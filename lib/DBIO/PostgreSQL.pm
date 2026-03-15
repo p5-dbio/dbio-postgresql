@@ -22,11 +22,11 @@ __PACKAGE__->mk_classdata('_pg_settings' => {});
 
 =head1 DESCRIPTION
 
-L<DBIO::PostgreSQL> is the PostgreSQL driver distribution for DBIO.
+L<DBIO::PostgreSQL> is the PostgreSQL driver component for DBIO.
 
 When this component is loaded into a schema class, C<connection()> sets
-L<DBIO::Schema/storage_type> to C<+DBIO::PostgreSQL::Storage>, enabling
-PostgreSQL-specific storage behavior.
+L<DBIO::Schema/storage_type> to C<+DBIO::PostgreSQL::Storage>, which enables
+PostgreSQL-specific storage behavior automatically.
 
 This distribution also provides PostgreSQL-native DDL/deploy helpers and
 introspection/diff tooling.
