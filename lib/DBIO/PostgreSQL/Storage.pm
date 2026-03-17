@@ -60,7 +60,6 @@ use Try::Tiny;
 use namespace::clean;
 
 # PostgreSQL defaults
-__PACKAGE__->sql_limit_dialect('LimitOffset');
 __PACKAGE__->sql_quote_char('"');
 __PACKAGE__->datetime_parser_type('DateTime::Format::Pg');
 __PACKAGE__->_use_multicolumn_in(1);

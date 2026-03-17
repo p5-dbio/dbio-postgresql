@@ -1,21 +1,4 @@
 Revision history for DBIO-PostgreSQL
 
 {{$NEXT}}
-    - Initial release as standalone distribution extracted from DBIO core
-    - DBIO::PostgreSQL schema component and DBIO::PostgreSQL::Storage driver
-    - DBIO::PostgreSQL::SQLMaker with PostgreSQL-specific SQL generation
-    - DBIO::PostgreSQL::Loader for Schema::Loader PostgreSQL introspection
-    - Three-layer architecture: Database, PgSchema, and Result components
-    - PostgreSQL schema (namespace) support as first-class objects
-    - Enum, composite type, and range type support
-    - Index support: btree, gin, gist, brin, hash — partial, expression, INCLUDE
-    - Row Level Security (RLS) policy support
-    - Trigger and function management
-    - Introspection via pg_catalog for all supported object types
-    - Test-deploy-and-compare strategy for schema upgrades
-    - Migrate test suite from DBICTest to DBIO::Test
-    - Remove hardcoded $VERSION from Loader, add to load test
-    - Add replicated coverage to PostgreSQL driver tests
-    - Comprehensive POD documentation for all 27 modules
-    - Align POD with DBIO conventions (=attr, =method collectors)
-    - Restore historical Loader provenance note
+    - Remove sql_limit_dialect from Storage (uses default apply_limit)
