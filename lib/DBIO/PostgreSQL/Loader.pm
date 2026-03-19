@@ -147,7 +147,7 @@ sub _view_definition {
 sub _setup_src_meta {
   my ($self, $table) = @_;
 
-  $self->next::method(@_);
+  $self->next::method($table);
 
   my $table_class = $self->classes->{$table->sql_name};
   my $table_key   = $self->_table_key($table);

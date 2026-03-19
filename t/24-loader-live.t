@@ -68,9 +68,9 @@ $dbh->do(qq{
 my $schema = DBIO::Test::PgLoader::Schema->connect($dsn, $user, $pass);
 
 ok($schema->can('source'), 'loader returned a connected schema');
-is_deeply([$schema->sources], ['Users'], 'table loaded from dedicated schema');
+is_deeply([$schema->sources], ['User'], 'table loaded from dedicated schema');
 
-my $source = $schema->source('Users');
+my $source = $schema->source('User');
 my $class  = $source->result_class;
 
 ok($class->can('pg_schema'), 'PostgreSQL::Result component loaded');

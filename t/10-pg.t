@@ -26,6 +26,9 @@ EOM
 our @test_classes; #< array that will be pushed into by test classes defined in this file
 DBIO::Test::Schema->load_classes( map {s/.+:://;$_} @test_classes ) if @test_classes;
 
+### load PostgreSQL-specific test schema classes
+DBIO::Test::Schema->load_classes({ 'DBIO::PostgreSQL::Test' => ['SequenceTest'] });
+
 ###  pre-connect tests (keep each test separate as to make sure rebless() runs)
   {
     my $s = DBIO::Test::Schema->connect($dsn, $user, $pass);

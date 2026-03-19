@@ -16,13 +16,19 @@ my ($dsn, $user, $pass) = @ENV{map { "DBIOTEST_PG_${_}" } qw/DSN USER PASS/};
 plan skip_all => 'Set $ENV{DBIOTEST_PG_DSN}, _USER and _PASS to run this test'
   unless ($dsn && $user);
 
-DBIO::Test::Schema->load_classes('EventTZPg');
+DBIO::Test::Schema->load_classes({ 'DBIO::PostgreSQL::Test' => ['EventTZPg'] });
 
 my $schema = DBIO::Test->init_schema(
   dsn  => $dsn,
   user => $user,
   pass => $pass,
 );
+
+# The standard test schema creates 'created_on' as plain timestamp.
+# For timezone-aware tests we need timestamptz.
+$schema->storage->dbh_do(sub {
+  $_[1]->do('ALTER TABLE event ALTER COLUMN created_on TYPE timestamp with time zone');
+});
 
 # this may generate warnings under certain CI flags, hence do it outside of
 # the warnings_are below

@@ -28,7 +28,7 @@ eval {
 
     {
         local $SIG{__WARN__} = sub {};
-        eval { $dbh->do("DROP TABLE cd") };
+        eval { $dbh->do("DROP TABLE cd CASCADE") };
         $dbh->do("CREATE TABLE cd (cdid serial PRIMARY KEY, artist INTEGER NOT NULL UNIQUE, title VARCHAR(100) NOT NULL UNIQUE, year VARCHAR(100) NOT NULL, genreid INTEGER, single_track INTEGER);");
     }
 
