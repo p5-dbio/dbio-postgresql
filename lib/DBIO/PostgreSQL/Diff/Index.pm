@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Index;
 # ABSTRACT: Diff operations for PostgreSQL indexes
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

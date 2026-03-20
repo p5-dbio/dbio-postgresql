@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Test::EventTZPg;
 # ABSTRACT: Test result class for PostgreSQL timezone-aware datetime inflation
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

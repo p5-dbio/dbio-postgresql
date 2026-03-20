@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::DDL;
 # ABSTRACT: Generate PostgreSQL DDL from DBIO schema classes
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

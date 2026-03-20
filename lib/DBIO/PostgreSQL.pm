@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL;
 # ABSTRACT: PostgreSQL-specific schema management for DBIO
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff;
 # ABSTRACT: Compare two introspected PostgreSQL models
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

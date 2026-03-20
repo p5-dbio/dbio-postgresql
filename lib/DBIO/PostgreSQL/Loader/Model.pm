@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Loader::Model;
 # ABSTRACT: Translate PostgreSQL introspection into DBIO::Loader metadata
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

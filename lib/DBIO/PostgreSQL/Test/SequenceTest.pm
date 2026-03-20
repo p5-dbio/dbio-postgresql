@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Test::SequenceTest;
 # ABSTRACT: Test result class for PostgreSQL sequence tests
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

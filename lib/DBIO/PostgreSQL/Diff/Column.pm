@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Column;
 # ABSTRACT: Diff operations for PostgreSQL columns
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

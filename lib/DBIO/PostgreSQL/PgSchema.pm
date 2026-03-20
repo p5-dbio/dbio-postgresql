@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::PgSchema;
 # ABSTRACT: Base class for PostgreSQL schema namespaces
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Loader;
 # ABSTRACT: PostgreSQL introspection for DBIO::Loader
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

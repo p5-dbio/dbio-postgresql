@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Schema;
 # ABSTRACT: Diff operations for PostgreSQL schemas
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

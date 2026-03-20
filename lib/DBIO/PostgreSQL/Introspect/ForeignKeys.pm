@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::ForeignKeys;
 # ABSTRACT: Introspect PostgreSQL foreign keys
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

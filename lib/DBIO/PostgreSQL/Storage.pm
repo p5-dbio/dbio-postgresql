@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Storage;
 # ABSTRACT: PostgreSQL storage layer for DBIO
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

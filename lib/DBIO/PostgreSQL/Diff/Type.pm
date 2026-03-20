@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Type;
 # ABSTRACT: Diff operations for PostgreSQL types (enums, composites, ranges)
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Functions;
 # ABSTRACT: Introspect PostgreSQL functions
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

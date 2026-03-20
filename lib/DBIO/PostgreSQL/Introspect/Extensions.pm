@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Extensions;
 # ABSTRACT: Introspect PostgreSQL extensions
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Extension;
 # ABSTRACT: Diff operations for PostgreSQL extensions
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

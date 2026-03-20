@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Deploy;
 # ABSTRACT: Deploy and upgrade PostgreSQL schemas via test-deploy-and-compare
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

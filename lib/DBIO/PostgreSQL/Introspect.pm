@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect;
 # ABSTRACT: Introspect a PostgreSQL database via pg_catalog
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

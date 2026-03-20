@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Triggers;
 # ABSTRACT: Introspect PostgreSQL triggers
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

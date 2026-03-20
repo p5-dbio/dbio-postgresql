@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Tables;
 # ABSTRACT: Introspect PostgreSQL tables
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

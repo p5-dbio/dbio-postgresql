@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Diff::Policy;
 # ABSTRACT: Diff operations for PostgreSQL Row Level Security policies
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

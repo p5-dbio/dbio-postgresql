@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Policies;
 # ABSTRACT: Introspect PostgreSQL Row Level Security policies
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

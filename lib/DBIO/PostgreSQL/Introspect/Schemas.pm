@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Schemas;
 # ABSTRACT: Introspect PostgreSQL schemas (namespaces)
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;

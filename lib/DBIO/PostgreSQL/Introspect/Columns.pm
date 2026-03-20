@@ -1,5 +1,6 @@
 package DBIO::PostgreSQL::Introspect::Columns;
 # ABSTRACT: Introspect PostgreSQL table columns
+our $VERSION = '0.900000';
 
 use strict;
 use warnings;
