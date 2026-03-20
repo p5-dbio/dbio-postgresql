@@ -4,12 +4,10 @@ package DBIO::PostgreSQL::Deploy;
 use strict;
 use warnings;
 
-use Moo;
 use DBI;
 use DBIO::PostgreSQL::DDL;
 use DBIO::PostgreSQL::Introspect;
 use DBIO::PostgreSQL::Diff;
-use namespace::clean;
 
 =head1 DESCRIPTION
 
@@ -59,10 +57,13 @@ C<as_sql> when you are ready to apply the ordered migration statements.
 
 =cut
 
-has schema => (
-  is       => 'ro',
-  required => 1,
-);
+sub new {
+  my ($class, %args) = @_;
+  $args{temp_db_prefix} //= '_dbio_tmp_';
+  bless \%args, $class;
+}
+
+sub schema { $_[0]->{schema} }
 
 =attr schema
 
@@ -70,10 +71,7 @@ A connected L<DBIO::PostgreSQL> schema instance. Required.
 
 =cut
 
-has temp_db_prefix => (
-  is      => 'ro',
-  default => '_dbio_tmp_',
-);
+sub temp_db_prefix { $_[0]->{temp_db_prefix} }
 
 =attr temp_db_prefix
 

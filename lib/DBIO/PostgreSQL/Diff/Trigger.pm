@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Trigger;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a trigger-level diff operation: C<CREATE TRIGGER> or C<DROP
@@ -15,7 +12,9 @@ a C<CREATE>. Triggers are compared using the full C<pg_get_triggerdef> output.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -23,7 +22,7 @@ The operation type: C<create> or C<drop>.
 
 =cut
 
-has table_key => ( is => 'ro', required => 1 );
+sub table_key { $_[0]->{table_key} }
 
 =attr table_key
 
@@ -31,7 +30,7 @@ The C<schema.table> key identifying which table the trigger belongs to.
 
 =cut
 
-has trigger_name => ( is => 'ro', required => 1 );
+sub trigger_name { $_[0]->{trigger_name} }
 
 =attr trigger_name
 
@@ -39,7 +38,7 @@ The trigger name.
 
 =cut
 
-has trigger_info => ( is => 'ro' );
+sub trigger_info { $_[0]->{trigger_info} }
 
 =attr trigger_info
 

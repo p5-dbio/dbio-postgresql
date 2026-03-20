@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::DDL;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 C<DBIO::PostgreSQL::DDL> generates PostgreSQL DDL statements directly from

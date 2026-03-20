@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::PgSchema;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 C<DBIO::PostgreSQL::PgSchema> is the base class for the intermediate
@@ -40,31 +37,21 @@ instantiated.
 
 =cut
 
-has pg_schema_name => (
-  is       => 'ro',
-  required => 1,
-);
+sub new {
+  my ($class, %args) = @_;
+  $args{_enums}     //= {};
+  $args{_types}     //= {};
+  $args{_functions} //= {};
+  bless \%args, $class;
+}
+
+sub pg_schema_name { $_[0]->{pg_schema_name} }
 
 =attr pg_schema_name
 
 The PostgreSQL schema name (e.g. C<auth>, C<public>, C<api>). Required.
 
 =cut
-
-has _enums => (
-  is      => 'ro',
-  default => sub { {} },
-);
-
-has _types => (
-  is      => 'ro',
-  default => sub { {} },
-);
-
-has _functions => (
-  is      => 'ro',
-  default => sub { {} },
-);
 
 =method pg_enum
 

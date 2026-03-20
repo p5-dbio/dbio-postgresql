@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Schema;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a single schema (namespace) diff operation: C<CREATE SCHEMA> or
@@ -15,7 +12,9 @@ and consumed by L<DBIO::PostgreSQL::Diff>.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -23,7 +22,7 @@ The operation type: C<create> or C<drop>.
 
 =cut
 
-has schema_name => ( is => 'ro', required => 1 );
+sub schema_name { $_[0]->{schema_name} }
 
 =attr schema_name
 

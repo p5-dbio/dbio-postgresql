@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Index;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents an index-level diff operation: C<CREATE INDEX> or C<DROP INDEX>.
@@ -17,7 +14,9 @@ all detected correctly.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -25,7 +24,7 @@ The operation type: C<create> or C<drop>.
 
 =cut
 
-has table_key => ( is => 'ro', required => 1 );
+sub table_key { $_[0]->{table_key} }
 
 =attr table_key
 
@@ -33,7 +32,7 @@ The C<schema.table> key for the table this index belongs to.
 
 =cut
 
-has index_name => ( is => 'ro', required => 1 );
+sub index_name { $_[0]->{index_name} }
 
 =attr index_name
 
@@ -41,7 +40,7 @@ The index name.
 
 =cut
 
-has index_info => ( is => 'ro' );
+sub index_info { $_[0]->{index_info} }
 
 =attr index_info
 

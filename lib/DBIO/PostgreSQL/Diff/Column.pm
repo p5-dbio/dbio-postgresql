@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Column;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a column-level diff operation: C<ADD COLUMN>, C<DROP COLUMN>, or
@@ -15,7 +12,9 @@ columns on tables that exist in both source and target are compared.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # add, drop, alter
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -23,7 +22,7 @@ The operation type: C<add>, C<drop>, or C<alter>.
 
 =cut
 
-has table_key => ( is => 'ro', required => 1 );
+sub table_key { $_[0]->{table_key} }
 
 =attr table_key
 
@@ -31,7 +30,7 @@ The C<schema.table> key identifying which table the column belongs to.
 
 =cut
 
-has column_name => ( is => 'ro', required => 1 );
+sub column_name { $_[0]->{column_name} }
 
 =attr column_name
 
@@ -39,7 +38,7 @@ The column name.
 
 =cut
 
-has old_info => ( is => 'ro' );
+sub old_info { $_[0]->{old_info} }
 
 =attr old_info
 
@@ -47,7 +46,7 @@ The source column metadata hashref (present for C<drop> and C<alter>).
 
 =cut
 
-has new_info => ( is => 'ro' );
+sub new_info { $_[0]->{new_info} }
 
 =attr new_info
 

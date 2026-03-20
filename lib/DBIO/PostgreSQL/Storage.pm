@@ -57,7 +57,6 @@ use Scope::Guard ();
 use Context::Preserve 'preserve_context';
 use DBIO::Carp;
 use Try::Tiny;
-use namespace::clean;
 
 # PostgreSQL defaults
 __PACKAGE__->sql_quote_char('"');

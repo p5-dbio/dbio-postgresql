@@ -4,22 +4,15 @@ package DBIO::PostgreSQL::Loader::Model;
 use strict;
 use warnings;
 
-use Moo;
+sub new {
+  my ($class, %args) = @_;
+  $args{preserve_case} //= 0;
+  bless \%args, $class;
+}
 
-has model => (
-  is       => 'ro',
-  required => 1,
-);
-
-has preserve_case => (
-  is      => 'ro',
-  default => sub { 0 },
-);
-
-has db_schema => (
-  is      => 'ro',
-  default => sub { undef },
-);
+sub model { $_[0]->{model} }
+sub preserve_case { $_[0]->{preserve_case} }
+sub db_schema { $_[0]->{db_schema} }
 
 sub table_keys {
   my ($self) = @_;

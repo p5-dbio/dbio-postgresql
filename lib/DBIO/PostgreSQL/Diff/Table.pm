@@ -4,19 +4,18 @@ package DBIO::PostgreSQL::Diff::Table;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
-Represents a table-level diff operation: C<CREATE TABLE> (empty shell — columns
+Represents a table-level diff operation: C<CREATE TABLE> (empty shell -- columns
 are added separately by L<DBIO::PostgreSQL::Diff::Column>) or C<DROP TABLE
 CASCADE>. Instances are produced by L</diff> and consumed by
 L<DBIO::PostgreSQL::Diff>.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -24,7 +23,7 @@ The operation type: C<create> or C<drop>.
 
 =cut
 
-has schema_name => ( is => 'ro', required => 1 );
+sub schema_name { $_[0]->{schema_name} }
 
 =attr schema_name
 
@@ -32,7 +31,7 @@ PostgreSQL schema containing the table.
 
 =cut
 
-has table_name => ( is => 'ro', required => 1 );
+sub table_name { $_[0]->{table_name} }
 
 =attr table_name
 
@@ -40,7 +39,7 @@ The table name.
 
 =cut
 
-has table_info => ( is => 'ro' );
+sub table_info { $_[0]->{table_info} }
 
 =attr table_info
 

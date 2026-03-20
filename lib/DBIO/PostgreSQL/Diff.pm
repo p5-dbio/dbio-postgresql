@@ -4,8 +4,6 @@ package DBIO::PostgreSQL::Diff;
 use strict;
 use warnings;
 
-use Moo;
-
 =head1 DESCRIPTION
 
 C<DBIO::PostgreSQL::Diff> compares two introspected PostgreSQL database models
@@ -39,12 +37,10 @@ use DBIO::PostgreSQL::Diff::Function;
 use DBIO::PostgreSQL::Diff::Trigger;
 use DBIO::PostgreSQL::Diff::Policy;
 use DBIO::PostgreSQL::Diff::Extension;
-use namespace::clean;
 
-has source => (
-  is       => 'ro',
-  required => 1,
-);
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub source { $_[0]->{source} }
 
 =attr source
 
@@ -53,10 +49,7 @@ L<DBIO::PostgreSQL::Introspect/model>. Required.
 
 =cut
 
-has target => (
-  is       => 'ro',
-  required => 1,
-);
+sub target { $_[0]->{target} }
 
 =attr target
 
@@ -64,10 +57,7 @@ The desired (deployed from DBIO classes) database model hashref. Required.
 
 =cut
 
-has operations => (
-  is      => 'lazy',
-  builder => '_build_operations',
-);
+sub operations { $_[0]->{operations} //= $_[0]->_build_operations }
 
 =attr operations
 

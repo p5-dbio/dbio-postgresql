@@ -4,19 +4,18 @@ package DBIO::PostgreSQL::Diff::Type;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a type-level diff operation: C<CREATE TYPE>, C<DROP TYPE CASCADE>,
 or C<ALTER TYPE ... ADD VALUE> (for enum value additions). Handles enum,
 composite, and range types. Note that enum value removal is not supported by
-PostgreSQL — only addition is possible without recreating the type.
+PostgreSQL -- only addition is possible without recreating the type.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop, add_value
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -24,7 +23,7 @@ The operation type: C<create>, C<drop>, or C<add_value> (enum only).
 
 =cut
 
-has type_key => ( is => 'ro', required => 1 );
+sub type_key { $_[0]->{type_key} }
 
 =attr type_key
 
@@ -32,7 +31,7 @@ The C<schema.type_name> key.
 
 =cut
 
-has type_info => ( is => 'ro' );
+sub type_info { $_[0]->{type_info} }
 
 =attr type_info
 
@@ -41,7 +40,7 @@ C<attributes>, or C<subtype> depending on kind).
 
 =cut
 
-has added_values => ( is => 'ro' );
+sub added_values { $_[0]->{added_values} }
 
 =attr added_values
 

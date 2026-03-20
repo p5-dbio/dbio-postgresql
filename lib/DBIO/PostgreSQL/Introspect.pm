@@ -4,8 +4,6 @@ package DBIO::PostgreSQL::Introspect;
 use strict;
 use warnings;
 
-use Moo;
-
 =head1 DESCRIPTION
 
 C<DBIO::PostgreSQL::Introspect> reads the live state of a PostgreSQL database
@@ -38,12 +36,10 @@ use DBIO::PostgreSQL::Introspect::Extensions;
 use DBIO::PostgreSQL::Introspect::Policies;
 use DBIO::PostgreSQL::Introspect::Sequences;
 use DBIO::PostgreSQL::Introspect::ForeignKeys;
-use namespace::clean;
 
-has dbh => (
-  is       => 'ro',
-  required => 1,
-);
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub dbh { $_[0]->{dbh} }
 
 =attr dbh
 
@@ -51,10 +47,7 @@ A connected C<DBI> database handle. Required.
 
 =cut
 
-has schema_filter => (
-  is      => 'ro',
-  default => sub { undef },
-);
+sub schema_filter { $_[0]->{schema_filter} }
 
 =attr schema_filter
 
@@ -63,10 +56,7 @@ When C<undef>, all non-system schemas are introspected.
 
 =cut
 
-has model => (
-  is      => 'lazy',
-  builder => '_build_model',
-);
+sub model { $_[0]->{model} //= $_[0]->_build_model }
 
 =attr model
 

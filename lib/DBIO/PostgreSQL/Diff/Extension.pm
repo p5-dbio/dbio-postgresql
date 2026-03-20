@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Extension;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents an extension-level diff operation: C<CREATE EXTENSION IF NOT
@@ -16,7 +13,9 @@ operation.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop, update
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -24,7 +23,7 @@ The operation type: C<create>, C<drop>, or C<update>.
 
 =cut
 
-has extension_name => ( is => 'ro', required => 1 );
+sub extension_name { $_[0]->{extension_name} }
 
 =attr extension_name
 
@@ -32,7 +31,7 @@ The PostgreSQL extension name (e.g. C<pgcrypto>, C<postgis>).
 
 =cut
 
-has extension_info => ( is => 'ro' );
+sub extension_info { $_[0]->{extension_info} }
 
 =attr extension_info
 
@@ -40,7 +39,7 @@ Extension metadata hashref (C<version>, C<schema_name>, C<relocatable>).
 
 =cut
 
-has old_version => ( is => 'ro' );
+sub old_version { $_[0]->{old_version} }
 
 =attr old_version
 
@@ -48,7 +47,7 @@ The installed version (set for C<update> operations).
 
 =cut
 
-has new_version => ( is => 'ro' );
+sub new_version { $_[0]->{new_version} }
 
 =attr new_version
 

@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Policy;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a Row Level Security diff operation: C<CREATE POLICY>, C<DROP
@@ -16,7 +13,9 @@ flag from table introspection.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop, enable_rls, disable_rls
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -24,7 +23,7 @@ The operation type: C<create>, C<drop>, C<enable_rls>, or C<disable_rls>.
 
 =cut
 
-has table_key => ( is => 'ro', required => 1 );
+sub table_key { $_[0]->{table_key} }
 
 =attr table_key
 
@@ -32,7 +31,7 @@ The C<schema.table> key identifying the table.
 
 =cut
 
-has policy_name => ( is => 'ro' );
+sub policy_name { $_[0]->{policy_name} }
 
 =attr policy_name
 
@@ -40,7 +39,7 @@ The policy name (not set for C<enable_rls> / C<disable_rls> operations).
 
 =cut
 
-has policy_info => ( is => 'ro' );
+sub policy_info { $_[0]->{policy_info} }
 
 =attr policy_info
 

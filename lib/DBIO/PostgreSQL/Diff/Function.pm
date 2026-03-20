@@ -4,9 +4,6 @@ package DBIO::PostgreSQL::Diff::Function;
 use strict;
 use warnings;
 
-use Moo;
-use namespace::clean;
-
 =head1 DESCRIPTION
 
 Represents a function-level diff operation: C<CREATE FUNCTION>, C<DROP
@@ -15,7 +12,9 @@ Function identity is by the full signature key C<schema.name(identity_args)>.
 
 =cut
 
-has action => ( is => 'ro', required => 1 ); # create, drop, replace
+sub new { my ($class, %args) = @_; bless \%args, $class }
+
+sub action { $_[0]->{action} }
 
 =attr action
 
@@ -23,7 +22,7 @@ The operation type: C<create>, C<drop>, or C<replace>.
 
 =cut
 
-has function_key => ( is => 'ro', required => 1 );
+sub function_key { $_[0]->{function_key} }
 
 =attr function_key
 
@@ -31,7 +30,7 @@ The function's identity string: C<schema.name(args)>.
 
 =cut
 
-has function_info => ( is => 'ro' );
+sub function_info { $_[0]->{function_info} }
 
 =attr function_info
 
