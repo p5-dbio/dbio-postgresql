@@ -169,6 +169,11 @@ sub _setup_src_meta {
   if (my $pg_rls = $self->_loader_model->table_pg_rls($table_key)) {
     $self->_dbic_stmt($table_class, 'pg_rls', $pg_rls);
   }
+
+  my $checks = $self->_loader_model->table_check_constraints($table_key);
+  for my $name (sort keys %$checks) {
+    $self->_dbic_stmt($table_class, 'pg_check_constraint', $name, $checks->{$name});
+  }
 }
 
 =head1 SEE ALSO

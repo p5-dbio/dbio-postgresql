@@ -149,6 +149,10 @@ sub table_pg_indexes {
     $def{using}      = $index->{access_method}
       if ($index->{access_method} || '') ne 'btree';
     $def{unique}     = 1 if $index->{is_unique};
+    $def{include} = [ map { $self->_normalize_name($_) } @{ $index->{include_columns} } ]
+      if @{ $index->{include_columns} || [] };
+    $def{with} = $index->{storage_params}
+      if $index->{storage_params} && %{ $index->{storage_params} };
 
     $pg_indexes{$name} = \%def if %def;
   }
@@ -200,6 +204,11 @@ sub table_pg_rls {
     force    => $table->{rls_forced} ? 1 : 0,
     (keys %defs ? (policies => \%defs) : ()),
   };
+}
+
+sub table_check_constraints {
+  my ($self, $table_key) = @_;
+  return $self->model->{check_constraints}{$table_key} || {};
 }
 
 sub table_is_view {

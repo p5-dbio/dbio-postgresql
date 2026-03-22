@@ -37,6 +37,7 @@ use DBIO::PostgreSQL::Introspect::Extensions;
 use DBIO::PostgreSQL::Introspect::Policies;
 use DBIO::PostgreSQL::Introspect::Sequences;
 use DBIO::PostgreSQL::Introspect::ForeignKeys;
+use DBIO::PostgreSQL::Introspect::CheckConstraints;
 
 sub new { my ($class, %args) = @_; bless \%args, $class }
 
@@ -63,7 +64,8 @@ sub model { $_[0]->{model} //= $_[0]->_build_model }
 
 The introspected database model as a hashref. Built lazily on first access.
 Keys: C<schemas>, C<extensions>, C<types>, C<tables>, C<columns>, C<indexes>,
-C<triggers>, C<functions>, C<policies>, C<sequences>, C<foreign_keys>.
+C<triggers>, C<functions>, C<policies>, C<sequences>, C<foreign_keys>,
+C<check_constraints>.
 
 =cut
 
@@ -83,6 +85,7 @@ sub _build_model {
   my $policies   = DBIO::PostgreSQL::Introspect::Policies->fetch($dbh, $filter);
   my $sequences  = DBIO::PostgreSQL::Introspect::Sequences->fetch($dbh, $filter);
   my $foreign_keys = DBIO::PostgreSQL::Introspect::ForeignKeys->fetch($dbh, $filter);
+  my $check_constraints = DBIO::PostgreSQL::Introspect::CheckConstraints->fetch($dbh, $filter);
 
   return {
     schemas    => $schemas,
@@ -96,6 +99,7 @@ sub _build_model {
     policies   => $policies,
     sequences  => $sequences,
     foreign_keys => $foreign_keys,
+    check_constraints => $check_constraints,
   };
 }
 
@@ -128,6 +132,8 @@ sub _build_model {
 =item * L<DBIO::PostgreSQL::Introspect::Sequences>
 
 =item * L<DBIO::PostgreSQL::Introspect::ForeignKeys>
+
+=item * L<DBIO::PostgreSQL::Introspect::CheckConstraints>
 
 =back
 

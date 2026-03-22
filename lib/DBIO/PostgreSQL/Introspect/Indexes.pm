@@ -40,7 +40,8 @@ sub fetch {
       pg_catalog.pg_get_indexdef(i.indexrelid) AS definition,
       pg_catalog.pg_get_expr(i.indpred, i.indrelid) AS predicate,
       pg_catalog.pg_get_expr(i.indexprs, i.indrelid) AS expressions,
-      array_agg(a.attname ORDER BY k.n) AS column_names
+      array_agg(a.attname ORDER BY k.n) AS column_names,
+      ci.reloptions AS storage_params
     FROM pg_catalog.pg_index i
     JOIN pg_catalog.pg_class ci ON ci.oid = i.indexrelid
     JOIN pg_catalog.pg_class ct ON ct.oid = i.indrelid
@@ -63,7 +64,8 @@ sub fetch {
   $sql .= q{
     GROUP BY sn.nspname, ct.relname, ci.relname, am.amname,
              i.indisunique, i.indisprimary, i.indisvalid,
-             i.indexrelid, i.indrelid, i.indpred, i.indexprs
+             i.indexrelid, i.indrelid, i.indpred, i.indexprs,
+             ci.reloptions
     ORDER BY sn.nspname, ct.relname, ci.relname
   };
 
@@ -87,11 +89,39 @@ sub fetch {
       definition    => $row->{definition},
       predicate     => $row->{predicate},
       expressions   => $row->{expressions},
-      columns       => $columns,
+      columns         => $columns,
+      include_columns => $class->_parse_include($row->{definition}),
+      storage_params  => $class->_parse_storage_params($row->{storage_params}),
     };
   }
 
   return \%indexes;
+}
+
+sub _parse_include {
+  my ($class, $definition) = @_;
+  return [] unless $definition;
+  if ($definition =~ /\bINCLUDE\s*\(([^)]+)\)/i) {
+    my $cols = $1;
+    return [ map { s/^\s+|\s+$//g; s/^"|"$//g; $_ } split /,/, $cols ];
+  }
+  return [];
+}
+
+sub _parse_storage_params {
+  my ($class, $reloptions) = @_;
+  return {} unless $reloptions;
+  my $raw = $reloptions;
+  $raw =~ s/^\{|\}$//g if !ref $raw;
+  my @items = ref $raw ? @$raw : split /,/, $raw;
+  my %params;
+  for my $item (@items) {
+    $item =~ s/^\s+|\s+$//g;
+    if ($item =~ /^(.+?)=(.+)$/) {
+      $params{$1} = $2;
+    }
+  }
+  return \%params;
 }
 
 1;
