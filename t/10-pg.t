@@ -8,7 +8,7 @@ use Sub::Name;
 use Config;
 use DBIO::Test;
 use SQL::Abstract::Util 'is_literal_value';
-use DBIO::Util qw( is_exception sigwarn_silencer modver_gt_or_eq );
+use DBIO::Util qw( is_exception old_mro sigwarn_silencer modver_gt_or_eq );
 
 my ($dsn, $user, $pass) = @ENV{map { "DBIOTEST_PG_${_}" } qw/DSN USER PASS/};
 
@@ -397,7 +397,7 @@ lives_ok { $cds->update({ year => '2010' }) } 'Update on prefetched rs';
 
               # FIXME - this needs to go away in lieu of a non-retrying runner
               # ( i.e. after solving RT#47005 )
-              local *DBIO::Storage::DBI::_ping = sub { 1 }, DBIO::_ENV_::OLD_MRO && Class::C3->reinitialize()
+              local *DBIO::Storage::DBI::_ping = sub { 1 }, old_mro && Class::C3->reinitialize()
                 if modver_gt_or_eq( 'DBD::Pg' => '3.5.0' );
 
               alarm(1);
