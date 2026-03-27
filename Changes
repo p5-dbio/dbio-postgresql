@@ -2,3 +2,5 @@ Revision history for DBIO-PostgreSQL
 
 {{$NEXT}}
     - Remove sql_limit_dialect from Storage (uses default apply_limit)
+    - Add AccessBroker connect smoke coverage for PostgreSQL storage
+    - Move OLD_MRO test usage to DBIO::Util
